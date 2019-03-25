@@ -1,3 +1,8 @@
+#!/usr/bin/env python2
+"""
+example
+"""
+from optparse import OptionParser
 import logging,logging.config
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -5,6 +10,8 @@ pp = pprint.PrettyPrinter(indent=4)
 from logging_eg import customfilter
 from logging_eg import constants
 from logging_eg import update
+from logging_eg import predicates
+
 import os
 
 LOGGING = {
@@ -87,17 +94,47 @@ FARM = {
         }
     }
 
+def main():
+    parser = OptionParser(usage="usage: %prog [options]",
+                          version="%prog 1.0")
+    parser.add_option("-f", "--farm",
+                      action="store_true",
+                      dest="on_farm",
+                      default=False,
+                      help="Pretend we are running on the farm")
+    parser.add_option("-v", "--verbose",
+                      action="store_true",
+                      dest="verbose",
+                      default=False,
+                      help="Print out internal state")
 
-def doit(farm=None):
+    (options, args) = parser.parse_args()
+
+    if options.on_farm == True:
+        doit("FARM1", options.verbose)
+    else:
+        doit(None, options.verbose)
+
+
+def doit(farm=None, verbose=False):
     os.environ[constants.AD_SHOW] = "SRGTBILKO"
     os.environ[constants.AD_USER] = "clu"
     os.environ[constants.AD_OS] = "cent7_64"
 
+    farm_str = "LOCAL"
     if not farm is None:
         os.environ[constants.AD_FARM] = farm
-    config = update.config(update.on_farm_predicate, LOGGING, FARM)
-    pp.pprint(config)
-
+        farm_str = farm
+    config = update.config(predicates.on_farm, LOGGING, FARM)
+    if verbose:
+        print "------------------------"
+        print "CONFIGURATION DICTIONARY"
+        print "------------------------"
+        pp.pprint(config)
+        print ""
+        print "------------------------"
+        print "    OUTPUT ({})".format(farm_str)
+        print "------------------------"
     logging.config.dictConfig(config)
 
     root_log = logging.getLogger()
@@ -114,6 +151,4 @@ def doit(farm=None):
 
 
 if __name__ == "__main__":
-    import sys
-    farm = sys.argv[1] if len(sys.argv)>1 else None
-    doit(farm)
+    main()

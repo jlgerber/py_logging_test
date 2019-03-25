@@ -1,3 +1,9 @@
+"""
+customfilter.py
+
+Implementation of filter which decorates logRecord with additional
+information from the environment.
+"""
 import logging
 import os
 

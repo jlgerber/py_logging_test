@@ -1,6 +1,17 @@
+"""
+More or less a direct "homage" to stackoverflow code, with the
+exception of not merging lists, and raising a KeyError instead of an Exception.
+"""
 def merge(a, b, path=None, update=True):
-    "http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge"
-    "merges b into a"
+    """
+    Given two dicts, a and b, merge b into a.
+    code from: "http://stackoverflow.com/questions/7204805/python-dictionaries-of-dictionaries-merge"
+
+    :param a: The dictionary we wish to update
+    :parm b: The dictionary we wish to update `a` with
+    :returns: a
+    :raises: KeyError
+    """
     if path is None: path = []
     for key in b:
         if key in a:
@@ -16,7 +27,7 @@ def merge(a, b, path=None, update=True):
             elif update:
                 a[key] = b[key]
             else:
-                raise Exception('Conflict at %s' % '.'.join(path + [str(key)]))
+                raise KeyError('Conflict at %s' % '.'.join(path + [str(key)]))
         else:
             a[key] = b[key]
     return a
