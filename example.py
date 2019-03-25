@@ -6,6 +6,7 @@ from optparse import OptionParser
 import logging,logging.config
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
+from itertools import izip
 
 from logging_eg import customfilter
 from logging_eg import constants
@@ -115,16 +116,56 @@ def main():
     else:
         doit(None, options.verbose)
 
+def fake_lib_mod():
+    """
+    fake a library module, which would be logging to a non-dd log
+    """
+    root_log = logging.getLogger("3ps")
+    root_log.debug("a root debug message")
+    yield 1
+    root_log.info("a root info message")
+    yield 1
+    root_log.warn("a root warn message")
+    yield 1
+
+def fake_ad_mod():
+    """
+    fake root ad module
+    """
+    ad_log = logging.getLogger("ad."+ __name__)
+
+    ad_log.debug("an ad debug message")
+    yield 1
+    ad_log.info("an ad info message")
+    yield 1
+    ad_log.warn("an ad warn message")
+    yield 1
+
+def fake_adfoo_mod():
+    """
+    fake ad.foo module
+    """
+    ad_foo_log = logging.getLogger("ad.foo")
+
+    ad_foo_log.debug("an ad.foo debug message")
+    yield 1
+    ad_foo_log.info("an ad.foo info message")
+    yield 1
+    ad_foo_log.warn("an ad.foo warn message")
+    yield 1
 
 def doit(farm=None, verbose=False):
+    # fake the setup of the environment
     os.environ[constants.AD_SHOW] = "SRGTBILKO"
-    os.environ[constants.AD_USER] = "clu"
     os.environ[constants.AD_OS] = "cent7_64"
 
+    # setup farm
     farm_str = "LOCAL"
     if not farm is None:
         os.environ[constants.AD_FARM] = farm
         farm_str = farm
+
+    # update config dict
     config = update.config(predicates.on_farm, LOGGING, FARM)
     if verbose:
         print "------------------------"
@@ -132,23 +173,19 @@ def doit(farm=None, verbose=False):
         print "------------------------"
         pp.pprint(config)
         print ""
-        print "------------------------"
-        print "    OUTPUT ({})".format(farm_str)
-        print "------------------------"
+    print "------------------------"
+    print "    OUTPUT ({})".format(farm_str)
+    print "------------------------"
+
+    # Setup logging
     logging.config.dictConfig(config)
 
-    root_log = logging.getLogger()
-    ad_log = logging.getLogger("ad."+ __name__)
-
-    root_log.debug("a root debug message")
-    ad_log.debug("an ad debug message")
-
-    root_log.info("a root info message")
-    ad_log.info("an ad info message")
-
-    root_log.warn("a root warn message")
-    ad_log.warn("an ad warn message")
-
+    for _,_,_ in izip(
+        fake_lib_mod(),
+        fake_ad_mod(),
+        fake_adfoo_mod()
+    ):
+        pass
 
 if __name__ == "__main__":
     main()

@@ -15,8 +15,8 @@ class AdFilter(logging.Filter):
     """
     def filter(self, record):
         record.ad_level = self._get_level()
-        record.ad_user = os.environ.get("AD_USER")
-        record.ad_os = os.environ.get("AD_OS")
+        record.ad_user = os.environ.get(AD_USER)
+        record.ad_os = os.environ.get(AD_OS)
         return True
 
     def _get_level(self):
