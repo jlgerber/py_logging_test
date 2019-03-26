@@ -6,6 +6,8 @@ import logging
 import os
 from .fauxlevelspec import LevelSpec
 
+# We just tuck this away in a const. Because it isn't important
+# to the example
 LOCATION = os.path.dirname(os.path.dirname(__file__))
 
 class AdFileHandler(logging.FileHandler):
@@ -14,13 +16,18 @@ class AdFileHandler(logging.FileHandler):
     it identifies file logging location based on the level set
     """
     def __init__(self, filename, mode='a', encoding=None, delay=0):
+        """
+        The params are taken from logging.FileHandler. We simply store
+        the filename in a private variable for later access and then call
+        the parent class init
+        """
         self.__filename = filename
         super(AdFileHandler, self).__init__(filename, mode, encoding, delay)
 
     @property
     def baseFilename(self):
         """
-        the superclass uses baseFilename to access file logger location.
+        The superclass uses baseFilename to access file logger location.
         """
         level = LevelSpec.from_env()
         if level.is_valid():
@@ -34,4 +41,8 @@ class AdFileHandler(logging.FileHandler):
 
     @baseFilename.setter
     def baseFilename(self, value):
+        """
+        The superclass attempts to set self.baseFilename in init so we have to implement
+        a setter. However, we don't want it to do anything so we pass.
+        """
         pass

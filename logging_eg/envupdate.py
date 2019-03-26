@@ -1,5 +1,5 @@
 """
-update a logging dict based on settings from the environment.
+update a logging dict based on settings from the environment. IP. Not used
 """
 from os import environ
 
