@@ -53,7 +53,7 @@ LOGGING = {
                 'filters': ['adfilter']
             },
             'adfile': {
-                'class': 'logging.FileHandler',
+                'class': 'logging_eg.ad_filehandler.AdFileHandler',
                 'filename': 'mplog.log',
                 'mode': 'w',
                 'formatter': 'ad',
@@ -82,7 +82,7 @@ LOGGING = {
         'root': {
             'level': 'WARN',
             'handlers': ['console', 'adfile']
-        },
+        }
     }
 
 FARM = {
@@ -93,6 +93,16 @@ FARM = {
             'console': {
                 'level': 'DEBUG',
             },
+        },
+        # Remove the farm file logger. We are already capturing logs
+        'loggers': {
+            'ad': {
+                'handlers': ['adconsole']
+            }
+        },
+        # Remove the file logger. We are already capturing stderr/out on the farm.
+        'root': {
+            'handlers': ['console']
         }
     }
 
@@ -109,13 +119,16 @@ def main():
                       dest="verbose",
                       default=False,
                       help="Print out internal state")
+    parser.add_option("-l", "--level",
+                      dest="level",
+                      help="Pass in a level")
 
     (options, args) = parser.parse_args()
 
     if options.on_farm == True:
-        doit("FARM1", options.verbose)
+        doit("FARM1", options.level, options.verbose)
     else:
-        doit(None, options.verbose)
+        doit(None, options.level, options.verbose)
 
 def fake_lib_mod():
     """
@@ -155,9 +168,10 @@ def fake_adfoo_mod():
     ad_foo_log.warn("an ad.foo warn message")
     yield 1
 
-def doit(farm=None, verbose=False):
+def doit(farm=None, show=None, verbose=False):
     # fake the setup of the environment
-    os.environ[constants.AD_SHOW] = "SRGTBILKO"
+    if show:
+        os.environ[constants.AD_SHOW] = show
     os.environ[constants.AD_OS] = "cent7_64"
 
     # setup farm
