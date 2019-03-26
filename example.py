@@ -49,7 +49,8 @@ LOGGING = {
                 'class': 'logging.FileHandler',
                 'filename': 'mplog.log',
                 'mode': 'w',
-                'formatter': 'detailed',
+                'formatter': 'ad',
+                'filters': ['adfilter']
             },
             'adfile': {
                 'class': 'logging.FileHandler',
@@ -79,7 +80,7 @@ LOGGING = {
             }
         },
         'root': {
-            'level': 'DEBUG',
+            'level': 'WARN',
             'handlers': ['console', 'adfile']
         },
     }
