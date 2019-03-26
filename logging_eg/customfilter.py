@@ -8,6 +8,7 @@ import logging
 import os
 
 from .constants import *
+from .fauxlevelspec import LevelSpec
 
 class AdFilter(logging.Filter):
     """
@@ -20,6 +21,11 @@ class AdFilter(logging.Filter):
         return super(AdFilter, self).filter(record)
 
     def _get_level(self):
-        return ".".join(filter(None,[os.environ.get(x) for x in ("AD_SHOW", "AD_SEQ", "AD_SHOT")]))
+        level = LevelSpec.from_env()
+        if level.is_valid():
+            return str(level)
+        else:
+            return "FACILITY"
+        #return ".".join(filter(None,[os.environ.get(x) for x in ("AD_SHOW", "AD_SEQ", "AD_SHOT")]))
 
 
