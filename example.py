@@ -84,6 +84,23 @@ LOGGING = {
             'handlers': ['console', 'adfile']
         }
     }
+USER = {
+    'handlers': {
+        'user_console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'ad',
+            'filters': ['adfilter']
+        }
+    },
+    'loggers': {
+        'ad.foo': {
+            'level': 'DEBUG',
+            'propagate': False,
+            'handlers': ['user_console']
+        }
+    }
+}
 
 FARM = {
         'handlers': {
@@ -118,7 +135,12 @@ def main():
                       action="store_true",
                       dest="verbose",
                       default=False,
-                      help="Print out internal state")
+                      help="verbose output")
+    parser.add_option("-u", "--user-log",
+                      action="store_true",
+                      dest="userlog",
+                      default=False,
+                      help="add user configuration to logging (sets ad.foo to debug)")
     parser.add_option("-l", "--level",
                       dest="level",
                       help="Pass in a level")
@@ -126,9 +148,9 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.on_farm == True:
-        doit("FARM1", options.level, options.verbose)
+        doit("FARM1", options.level, options.userlog, options.verbose)
     else:
-        doit(None, options.level, options.verbose)
+        doit(None, options.level, options.userlog, options.verbose)
 
 def fake_lib_mod():
     """
@@ -168,7 +190,7 @@ def fake_adfoo_mod():
     ad_foo_log.warn("an ad.foo warn message")
     yield 1
 
-def doit(farm=None, show=None, verbose=False):
+def doit(farm=None, show=None, user_logging=False, verbose=False):
     # fake the setup of the environment
     if show:
         os.environ[constants.AD_SHOW] = show
@@ -181,7 +203,8 @@ def doit(farm=None, show=None, verbose=False):
         farm_str = farm
 
     # update config dict
-    config = update.config(predicates.on_farm, LOGGING, FARM)
+    config = update.config(predicates.boolean(user_logging), LOGGING, USER)
+    config = update.config(predicates.on_farm, config, FARM)
     if verbose:
         print "------------------------"
         print "CONFIGURATION DICTIONARY"

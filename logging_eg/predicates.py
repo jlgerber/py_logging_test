@@ -16,3 +16,24 @@ def on_farm():
     if farm == "" or farm is None:
         return False
     return True
+
+def true():
+    """
+    always return true
+    """
+    return True
+
+def false():
+    """
+    always return false
+    """
+    return False
+
+def boolean(value):
+    """
+    given a value that should be a boolean, return a function that
+    returns the value when called.
+    """
+    def _boolean():
+        return value
+    return _boolean
