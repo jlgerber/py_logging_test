@@ -7,7 +7,7 @@ information from the environment.
 import logging
 import os
 
-from .constants import *
+from .constants import (AD_USER, AD_OS)
 from .fauxlevelspec import LevelSpec
 
 class AdFilter(logging.Filter):
@@ -24,7 +24,8 @@ class AdFilter(logging.Filter):
         record.ad_os = os.environ.get(AD_OS)
         return super(AdFilter, self).filter(record)
 
-    def _get_level(self):
+    @staticmethod
+    def _get_level():
         """
         We return FACILITY if we are not in a show.
         """
