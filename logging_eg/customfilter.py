@@ -17,7 +17,7 @@ class AdFilter(logging.Filter):
         record.ad_level = self._get_level()
         record.ad_user = os.environ.get(AD_USER)
         record.ad_os = os.environ.get(AD_OS)
-        return True
+        return super(AdFilter, self).filter(record)
 
     def _get_level(self):
         return ".".join(filter(None,[os.environ.get(x) for x in ("AD_SHOW", "AD_SEQ", "AD_SHOT")]))
