@@ -2,88 +2,89 @@
 """
 example
 """
-from optparse import OptionParser
-import logging,logging.config
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
 from itertools import izip
-
-from logging_eg import customfilter
-from logging_eg import constants
-from logging_eg import update
-from logging_eg import predicates
-
 import os
+import logging
+import logging.config
+from optparse import OptionParser
+import pprint
+from logging_eg import constants
+from logging_eg import customfilter
+from logging_eg import predicates
+from logging_eg import update
+PPRINT = pprint.PrettyPrinter(indent=4)
+
+
 
 LOGGING = {
-        'version': 1,
-        'filters': {
-            'adfilter': {
-                '()': customfilter.AdFilter,
-            }
-        },
-        'formatters': {
-            'detailed': {
-                'class': 'logging.Formatter',
-                'format': '%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s'
-            },
-            'ad': {
-                'class': 'logging.Formatter',
-                'format': constants.AD_FORMAT
-            }
-        },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'level': 'WARN',
-                'formatter': 'ad',
-                'filters': ['adfilter']
-            },
-            'adconsole': {
-                'class': 'logging.StreamHandler',
-                'level': 'INFO',
-                'formatter': 'ad',
-                'filters': ['adfilter']
-            },
-            'file': {
-                'class': 'logging.FileHandler',
-                'filename': 'mplog.log',
-                'mode': 'w',
-                'formatter': 'ad',
-                'filters': ['adfilter']
-            },
-            'adfile': {
-                'class': 'logging_eg.ad_filehandler.AdFileHandler',
-                'filename': 'mplog.log',
-                'mode': 'w',
-                'formatter': 'ad',
-                'filters': ['adfilter']
-            },
-            'errors': {
-                'class': 'logging.FileHandler',
-                'filename': 'mplog-errors.log',
-                'mode': 'w',
-                'level': 'ERROR',
-                'formatter': 'detailed',
-            },
-        },
-        'loggers': {
-            # the level is set in the handlers
-            'ad': {
-                'level': 'DEBUG',
-                # propagate is false so that we can handle logging
-                # separately for AD and Root level logging. This
-                # does force us to register separate console handlers for
-                # the root
-                'propagate': False,
-                'handlers': ['adfile', 'adconsole']
-            }
-        },
-        'root': {
-            'level': 'WARN',
-            'handlers': ['console', 'adfile']
+    'version': 1,
+    'filters': {
+        'adfilter': {
+            '()': customfilter.AdFilter,
         }
+    },
+    'formatters': {
+        'detailed': {
+            'class': 'logging.Formatter',
+            'format': '%(asctime)s %(name)-15s %(levelname)-8s %(processName)-10s %(message)s'
+        },
+        'ad': {
+            'class': 'logging.Formatter',
+            'format': constants.AD_FORMAT
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'WARN',
+            'formatter': 'ad',
+            'filters': ['adfilter']
+        },
+        'adconsole': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            'formatter': 'ad',
+            'filters': ['adfilter']
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'mplog.log',
+            'mode': 'w',
+            'formatter': 'ad',
+            'filters': ['adfilter']
+        },
+        'adfile': {
+            'class': 'logging_eg.ad_filehandler.AdFileHandler',
+            'filename': 'mplog.log',
+            'mode': 'w',
+            'formatter': 'ad',
+            'filters': ['adfilter']
+        },
+        'errors': {
+            'class': 'logging.FileHandler',
+            'filename': 'mplog-errors.log',
+            'mode': 'w',
+            'level': 'ERROR',
+            'formatter': 'detailed',
+        },
+    },
+    'loggers': {
+        # the level is set in the handlers
+        'ad': {
+            'level': 'DEBUG',
+            # propagate is false so that we can handle logging
+            # separately for AD and Root level logging. This
+            # does force us to register separate console handlers for
+            # the root
+            'propagate': False,
+            'handlers': ['adfile', 'adconsole']
+        }
+    },
+    'root': {
+        'level': 'WARN',
+        'handlers': ['console', 'adfile']
     }
+}
 USER = {
     'handlers': {
         'user_console': {
@@ -103,27 +104,30 @@ USER = {
 }
 
 FARM = {
-        'handlers': {
-            'adconsole': {
-                'level': 'DEBUG'
-            },
-            'console': {
-                'level': 'DEBUG',
-            },
+    'handlers': {
+        'adconsole': {
+            'level': 'DEBUG'
         },
-        # Remove the farm file logger. We are already capturing logs
-        'loggers': {
-            'ad': {
-                'handlers': ['adconsole']
-            }
+        'console': {
+            'level': 'DEBUG',
         },
-        # Remove the file logger. We are already capturing stderr/out on the farm.
-        'root': {
-            'handlers': ['console']
+    },
+    # Remove the farm file logger. We are already capturing logs
+    'loggers': {
+        'ad': {
+            'handlers': ['adconsole']
         }
+    },
+    # Remove the file logger. We are already capturing stderr/out on the farm.
+    'root': {
+        'handlers': ['console']
     }
+}
 
 def main():
+    """
+    main function
+    """
     parser = OptionParser(usage="usage: %prog [options]",
                           version="%prog 1.0")
     parser.add_option("-f", "--farm",
@@ -145,9 +149,9 @@ def main():
                       dest="level",
                       help="Pass in a level")
 
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
 
-    if options.on_farm == True:
+    if options.on_farm is True:
         doit("FARM1", options.level, options.userlog, options.verbose)
     else:
         doit(None, options.level, options.userlog, options.verbose)
@@ -191,6 +195,9 @@ def fake_adfoo_mod():
     yield 1
 
 def doit(farm=None, show=None, user_logging=False, verbose=False):
+    """
+    Responsible for doing the work once main parses options and args.
+    """
     # fake the setup of the environment
     if show:
         os.environ[constants.AD_SHOW] = show
@@ -209,7 +216,7 @@ def doit(farm=None, show=None, user_logging=False, verbose=False):
         print "------------------------"
         print "CONFIGURATION DICTIONARY"
         print "------------------------"
-        pp.pprint(config)
+        PPRINT.pprint(config)
         print ""
     print "------------------------"
     print "    OUTPUT ({})".format(farm_str)
@@ -218,10 +225,10 @@ def doit(farm=None, show=None, user_logging=False, verbose=False):
     # Setup logging
     logging.config.dictConfig(config)
 
-    for _,_,_ in izip(
-        fake_lib_mod(),
-        fake_ad_mod(),
-        fake_adfoo_mod()
+    for _, _, _ in izip(
+            fake_lib_mod(),
+            fake_ad_mod(),
+            fake_adfoo_mod()
     ):
         pass
 
