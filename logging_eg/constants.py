@@ -11,5 +11,6 @@ AD_SEQ = "AD_SEQ"
 AD_SHOT = "AD_SHOT"
 AD_USER = "USER"
 AD_FARM = "AD_FARM"
-AD_FORMAT = "%(name)-12s | %(ad_level)-8s | %(ad_os)-5s | %(levelname)-8s | %(ad_user)-3s | %(message)s"
+AD_FORMAT = \
+    "%(name)-12s | %(ad_level)-8s | %(ad_os)-5s | %(levelname)-8s | %(ad_user)-3s | %(message)s"
 AD_LOGLEVEL_ENVNAME = "AD_LOGLEVEL"
