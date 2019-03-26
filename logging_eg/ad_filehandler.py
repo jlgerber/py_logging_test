@@ -31,13 +31,13 @@ class AdFileHandler(logging.FileHandler):
         """
         level = LevelSpec.from_env()
         if level.is_valid():
-            logdir = os.path.join(LOCATION,"logoutput", "ad", "shows", level.path(), "LOGS")
+            logdir = os.path.join(LOCATION, "logoutput", "ad", "shows", level.path(), "LOGS")
             if not os.path.exists(logdir):
                 os.makedirs(logdir)
             rval = os.path.join(logdir, self.__filename)
             return rval
         else:
-            return os.path.join(LOCATION, "logoutput","ad","dept","logs", self.__filename)
+            return os.path.join(LOCATION, "logoutput", "ad", "dept", "logs", self.__filename)
 
     @baseFilename.setter
     def baseFilename(self, value):
