@@ -7,7 +7,6 @@ logging levels when on the farm, for instance.
 """
 
 from .dictmerge import merge
-from .constants import AD_FARM
 
 def config(predicate_fn, dct, update_dct):
     """

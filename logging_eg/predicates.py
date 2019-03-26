@@ -37,3 +37,4 @@ def boolean(value):
     def _boolean():
         return value
     return _boolean
+
